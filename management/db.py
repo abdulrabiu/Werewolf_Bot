@@ -29,7 +29,7 @@ def poll_list():
 
 def player_list():
     """Return a list of users that are signed up in the database. Dead players and spectators are returned as well."""
-    return [item[0] for item in poll_list()]
+    return [int(item[0]) for item in poll_list()]
 
 # This function takes an argument and looks up if there's a user with a matching emoji.
 # If found multiple, which it shouldn't, it takes the first result and ignores the rest.
@@ -248,6 +248,7 @@ def channel_get(channel_id,user_id = ''):
 
         column = 'id' + str(user_id)
         c.execute("SELECT {} FROM 'channels' WHERE channel_id =?".format(column),(channel_id,))
+        return c.fetchone()[0]
     return c.fetchone()
 
 def get_columns():
@@ -340,6 +341,24 @@ def count_categories():
     """This function counts how many categories are currently registered, and returns the value as an integer."""
     c.execute("SELECT COUNT(*) FROM 'categories';")
     return c.fetchone()[0]
+
+def get_channel_members(channel_id, number = 1):
+    """This function returns a list of user ids that have the given number in a given channel.
+    If it finds none or if the channel wasn't found, the function returns an empty list.  
+    
+    Keyword arguments:  
+    channel_id -> id of the channel  
+    number -> number that is to be selected"""
+    c.execute("SELECT * FROM 'channel_rows'")
+    members = []
+
+    for user in c.fetchall():
+        if channel_get(channel_id,int(user[0])) == None:
+            print("Warning: The bot has attempted to look for a channel that does not exist!")
+            return []
+        if int(channel_get(channel_id,int(user[0]))) == int(number):
+            members.append(int(user[0]))
+    return members
 
 # Add a new participant to the database
 def signup(user_id,name,emoji):

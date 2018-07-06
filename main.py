@@ -24,7 +24,9 @@ splashes = [
 'Works on my machine',
 'Always use a database. What\'s a JSON?',
 'Powered by Electricity',
-'Who still writes docs in 2018?'
+'Who still writes docs in 2018?',
+"First normal form? What does that mean?",
+"By using a relational database but with nonrelational practices we get the worst of both worlds!"
 ]
 
 import discord
@@ -163,9 +165,9 @@ async def on_message(message):
                 viewers = []
                 abductees = []
                 for member in db.player_list():
-                    if db_get(member,'abducted') == 1:
+                    if db_get(member,'abducted') == 1 and member in element.members:
                         abductees.append(member)
-                    elif member in element.members or db_get(member,'role') in ['Dead','Spectator'] or str(member) == str(element.owner):
+                    elif member in element.members or db_get(member,'role') in ['Dead','Spectator'] or int(member) == int(element.owner):
                         if main_guild.get_member(int(member)) != None:
                             viewers.append(main_guild.get_member(int(member)))
                         else:
@@ -173,9 +175,6 @@ async def on_message(message):
                             temp_msg.append(sorry)
 
                 intro_msg = creation_messages.cc_intro([v.id for v in viewers])
-
-                await message.channel.send(viewers)
-                intro_msg = creation_messages.cc_intro(viewers)
 
                 # Role objects (based on ID)
                 roles = main_guild.roles # Roles from the guild
